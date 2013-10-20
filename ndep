@@ -1,0 +1,72 @@
+#!/bin/bash
+
+VERSION=0.0.1
+
+GREP=$(which -a grep | tail -1 | awk '{ print $1 }')
+
+usage()
+{
+cat << EOF
+
+    Usage: $0 [options] [path]
+
+    List the node modules and their versions for a given path (defaulting to
+    the current working directory).
+
+    OPTIONS:
+
+      -h    Show this message
+      -V    Show version
+      -j    Format the output as a JSON snippet for inclusion in a package.json
+            file
+
+EOF
+}
+
+PKG_FORMAT="%s@%s"
+OUTPUT_FORMAT="\n%s"
+TRAILING_COMMA=0
+
+while getopts "hVj" OPTION
+do
+    case $OPTION in
+        h)
+            usage
+            exit 1
+            ;;
+        V)
+            echo "version $VERSION"
+            exit 1
+            ;;
+        j)
+            PKG_FORMAT='"%s": "%s"'
+            OUTPUT_FORMAT="\n%s,"
+            TRAILING_COMMA=1
+            shift
+            ;;
+        ?)
+            usage
+            exit 2
+            ;;
+    esac
+done
+
+FIND_BASE_PATH=${1:-.}
+
+PKG_FILES=$(find "$FIND_BASE_PATH"/node_modules -maxdepth 2 -name "package.json")
+declare -a PKGS
+
+for f in $PKG_FILES
+do
+    pkg=$(basename $(dirname $f))
+    ver=$($GREP -e '"version"\s*:\s*' $f | $GREP -v "readme" | sed 's/^.*"version"\s*:\s*"\([^"]\+\)".*$/\1/')
+
+    printf -v str "$PKG_FORMAT" "$pkg" "$ver"
+
+    PKGS=("${PKGS[@]}" "$str")
+done
+
+OUTPUT="$( printf "$OUTPUT_FORMAT" "${PKGS[@]}" | sort )"
+LEN="$(( ${#OUTPUT} - 1 - $TRAILING_COMMA ))"
+
+echo "${OUTPUT:1:$LEN}"
