@@ -59,7 +59,7 @@ declare -a PKGS
 for f in $PKG_FILES
 do
     pkg=$(basename $(dirname $f))
-    ver=$($GREP -e '"version"\s*:\s*' $f | $GREP -v "readme" | sed 's/^.*"version"\s*:\s*"\([^"]\+\)".*$/\1/')
+    ver=$($GREP -e '"version"\s*:\s*' $f | $GREP -v "readme" | sed 's/^.*"version"[^:]*:[^"]*"\([^"]\{1,\}\)".*$/\1/')
 
     printf -v str "$PKG_FORMAT" "$pkg" "$ver"
 
