@@ -1,6 +1,6 @@
 # ndep
 
-*v0.0.1*
+*v0.0.2*
 
 List the installed node modules and their versions for a given path.
 
