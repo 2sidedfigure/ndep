@@ -19,6 +19,7 @@ cat << EOF
       -V    Show version
       -j    Format the output as a JSON snippet for inclusion in a package.json
             file
+      -p    Check all parent directories back to the root for available modules
 
 EOF
 }
@@ -27,7 +28,9 @@ pkg_format="%s@%s"
 output_format="\n%s"
 trailing_comma=0
 
-while getopts "hVj" option
+check_parent_dirs=
+
+while getopts "hVjp" option
 do
     case $option in
         h)
@@ -44,6 +47,10 @@ do
             trailing_comma=1
             shift
             ;;
+        p)
+            check_parent_dirs=1
+            shift
+            ;;
         ?)
             usage
             exit 2
@@ -52,8 +59,33 @@ do
 done
 
 find_base_path=${1:-.}
+abs_find_base_path=$(cd $find_base_path; pwd)
 
-pkg_files=$(find "$find_base_path"/node_modules -maxdepth 2 -name "package.json")
+build_package_file_list()
+{
+    files=${1:-}
+    modules_dir="$2/node_modules"
+
+    if [ -d $modules_dir ]
+    then
+        files=$(echo "$files" && find $modules_dir -maxdepth 2 -name "package.json")
+    fi
+
+    if [ $check_parent_dirs ]
+    then
+        if [ '/' != $2 ]
+        then
+            parent_dir=$(dirname $2)
+            build_package_file_list "$files" $parent_dir
+        else
+            echo "$files"
+        fi
+    else
+        echo "$files"
+    fi
+}
+
+pkg_files=$(build_package_file_list '' $abs_find_base_path)
 declare -a pkgs
 
 for f in $pkg_files
