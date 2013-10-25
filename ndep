@@ -86,19 +86,19 @@ build_package_file_list()
 }
 
 pkg_files=$(build_package_file_list '' $abs_find_base_path)
-declare -a pkgs
+declare -a modules
 
 for f in $pkg_files
 do
-    pkg=$(basename $(dirname $f))
+    mod=$(basename $(dirname $f))
     ver=$($real_grep -e '"version"\s*:\s*' $f | $real_grep -v "readme" | sed 's/^.*"version"[^:]*:[^"]*"\([^"]\{1,\}\)".*$/\1/')
 
-    printf -v str "$pkg_format" "$pkg" "$ver"
 
-    pkgs=("${pkgs[@]}" "$str")
+    printf -v str "$pkg_format" "$mod" "$ver"
+    modules=("${modules[@]}" "$str")
 done
 
-output="$( printf "$output_format" "${pkgs[@]}" | sort )"
+output="$( printf "$output_format" "${modules[@]}" | sort )"
 len="$(( ${#output} - 1 - $trailing_comma ))"
 
 echo "${output:1:$len}"
