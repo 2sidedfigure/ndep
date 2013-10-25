@@ -1,6 +1,6 @@
 #!/bin/bash
 
-version=0.0.2
+version=0.0.3
 
 real_grep=$(which -a grep | tail -1 | awk '{ print $1 }')
 
@@ -19,7 +19,8 @@ cat << EOF
       -V    Show version
       -j    Format the output as a JSON snippet for inclusion in a package.json
             file
-      -p    Check all parent directories back to the root for available modules
+      -p    Check all parent directories back to the filesystem root for
+            available modules
 
 EOF
 }

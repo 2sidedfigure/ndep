@@ -1,6 +1,6 @@
 # ndep
 
-*v0.0.2*
+*v0.0.3*
 
 List the installed node modules and their versions for a given path.
 
@@ -17,7 +17,9 @@ If no path is supplied, the current directory will be used.
   - **h**: Show usage.
   - **V**: Show version.
   - **j**: Format the output as a JSON snippet for inclusion in a
-          [package.json](https://npmjs.org/doc/json.html) file.
+           [package.json](https://npmjs.org/doc/json.html) file.
+  - **p**: Check all parent directories back to the filesystem root for
+           available modules.
 
 ## Author
 
@@ -45,4 +47,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
