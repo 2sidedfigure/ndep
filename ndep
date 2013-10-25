@@ -87,12 +87,31 @@ build_package_file_list()
 
 pkg_files=$(build_package_file_list '' $abs_find_base_path)
 declare -a modules
+declare -a module_names
+
+has_module()
+{
+    for e in "${module_names[@]}"
+    do
+        if [ "$e" == "$1" ]
+        then
+            echo 1
+            return
+        fi
+    done
+}
 
 for f in $pkg_files
 do
     mod=$(basename $(dirname $f))
     ver=$($real_grep -e '"version"\s*:\s*' $f | $real_grep -v "readme" | sed 's/^.*"version"[^:]*:[^"]*"\([^"]\{1,\}\)".*$/\1/')
 
+    if [ $(has_module "$mod") ]
+    then
+        continue
+    fi
+
+    module_names=("${module_names[@]}" "$mod")
 
     printf -v str "$pkg_format" "$mod" "$ver"
     modules=("${modules[@]}" "$str")
